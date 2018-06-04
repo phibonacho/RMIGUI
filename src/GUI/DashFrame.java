@@ -5,16 +5,13 @@ package GUI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import core.MessageClass;
-import core.TopicClass;
-import user.User;
-
+import RMIForum.user.*;
+import RMIForum.RMICore.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 
 /**
  *
