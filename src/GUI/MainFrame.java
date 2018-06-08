@@ -5,9 +5,10 @@
  */
 package GUI;
 
-import user.User;
+import RMIForum.user.User;
 
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 import static java.lang.System.exit;
 
@@ -26,10 +27,11 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         try {
             myClient = new User(host);
+            // dash = new DashFrame(myClient);
         } catch (UnknownHostException e) {
             System.err.println("Couldn't setup server...");
         }
-        // dash = new DashFrame(myClient);
+
     }
 
     /**
@@ -233,8 +235,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {
         user = usernameField.getText();
-        pw = passwordField.getSelectedText();
-        while(!myClient.ConnectionRequest(user, pw, HostField.getText(), "connect"));
+        pw = passwordField.getName();
+        System.out.println("Sending connection request as: "+user+" pw: "+pw);
+        try {
+            if (!myClient.ConnectionRequest(HostField.getText(), user, "default", "connect")) return;
+        }catch(RemoteException e){
+
+        }
         this.setVisible(false);
         DashFrame df = new DashFrame(myClient, HostField.getText(), this);
         df.setVisible(true);

@@ -44,8 +44,8 @@ public class DashFrame extends javax.swing.JFrame {
     public void updateConvo(){
         ConvoBox.removeAll();
         // add as many msgBox as the message in topic...
-        if(!myClient.getTopics().contains(TopicConvoName)) return;
-        for(String msg : myClient.getConvo(TopicConvoName.getText())){
+        if(!myClient.getServerTopics().contains(TopicConvoName.getText())) return;
+        for(String msg : myClient.getServerTopics().getTopicNamed(TopicConvoName.getText()).ListMessages()){
             ConvoBox.add(new MsgBox(msg));
         }
         ConvoBox.revalidate();
@@ -56,8 +56,8 @@ public class DashFrame extends javax.swing.JFrame {
 
     public void updateTopic(){
         SubBox.removeAll();
-        for(String top : myClient.getTopics()){
-            SubBox.add(new SubForm(top, myClient.getMyTopics().get(top)));
+        for(String top : myClient.getServerTopics().ListTopicName()){
+            SubBox.add(new SubForm(top, myClient.getServerTopics().getTopicNamed(top).hasUser(myClient.GetUsername())));
         }
         ConvoBox.revalidate();
         ConvoBox.repaint();
@@ -93,8 +93,7 @@ public class DashFrame extends javax.swing.JFrame {
 
         public SubForm(String tn, boolean pushed) {
             TopicName = tn;
-            if(myClient.getNotifier().contains(tn) && !TopicConvoName.equals(TopicName))setBackground(new java.awt.Color(206,109,139));
-            else setBackground(new java.awt.Color(139, 137, 130));
+
             setPreferredSize(new Dimension(163, 120));
             setMaximumSize(new java.awt.Dimension(getPreferredSize()));
             setMinimumSize(new java.awt.Dimension(getPreferredSize()));
@@ -185,7 +184,6 @@ public class DashFrame extends javax.swing.JFrame {
             SendButton.setEnabled(Triggered);
             setBackground(new java.awt.Color(139, 137, 130));
             updateConvo();
-            myClient.removeNotif(TopicName);
         }
     }
     /*-----------------------------------------------------------------------*/
@@ -435,7 +433,11 @@ public class DashFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-        myClient.ConnectionRequest(myClient.getUsername(), null, myClient.getServerHost(), "disconnect");
+        try {
+            myClient.ConnectionRequest(myClient.GetUsername(), null, myClient.getServerHost(), "disconnect");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         this.dispose();
         Caller.setVisible(true);
     }
@@ -457,7 +459,7 @@ public class DashFrame extends javax.swing.JFrame {
         String message = MessageField.getText();
         if(message.isEmpty()) return;
         try {
-            myClient.MessageRequest(new MessageClass(myClient.getUsername(), message), TopicConvoName.getText());
+            myClient.PublishRequest(new MessageClass(myClient.GetUsername(), message), TopicConvoName.getText());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
