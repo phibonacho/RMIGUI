@@ -106,7 +106,7 @@ public class DashFrame extends javax.swing.JFrame {
             SubButton.setBackground(new java.awt.Color(76, 92, 104));
             SubButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
             SubButton.setForeground(new java.awt.Color(133, 189, 191));
-            SubButton.setText("Subscribe");
+            SubButton.setText(pushed?"Unsubscribe":"Subscribe");
             SubButton.setBorder(null);
             SubButton.setPreferredSize(new Dimension(93, 25));
             SubButton.setSelected(pushed);
