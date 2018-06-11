@@ -12,6 +12,8 @@ import java.awt.*;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -19,6 +21,7 @@ import java.rmi.RemoteException;
  */
 public class DashFrame extends javax.swing.JFrame {
     private User myClient;
+    private String LastUpdatedTopic;
     String ServerHost;
     JFrame Caller;
 /*
@@ -106,7 +109,8 @@ public class DashFrame extends javax.swing.JFrame {
             setMaximumSize(new java.awt.Dimension(getPreferredSize()));
             setMinimumSize(new java.awt.Dimension(getPreferredSize()));
             setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(35, 37, 43), 2));
-            setBackground(new java.awt.Color(241, 99, 98));
+            if(tn.equals(LastUpdatedTopic))setBackground(new java.awt.Color(241, 99, 98));
+            else setBackground(new java.awt.Color(139, 137, 130));
             SubButton = new JToggleButton();
             CheckoutButton = new JButton();
 
@@ -201,7 +205,9 @@ public class DashFrame extends javax.swing.JFrame {
     public DashFrame(User user, String sh, JFrame c) {
         System.setErr(new PrintStream(System.err){
             public void println(String s){
-                if(s.equals("Fetched...")) {
+                if(s.contains("NM")|| s.contains("NT")){
+                    LastUpdatedTopic = s.substring(s.lastIndexOf(' ')+1);
+                    super.println("Last modified topic is: "+LastUpdatedTopic);
                     updateConvo();
                     updateTopic();
                 }
