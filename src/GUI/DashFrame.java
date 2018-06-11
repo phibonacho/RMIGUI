@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
  */
 public class DashFrame extends javax.swing.JFrame {
     private User myClient;
-    private String LastUpdatedTopic;
     String ServerHost;
     JFrame Caller;
 /*
@@ -57,13 +56,24 @@ public class DashFrame extends javax.swing.JFrame {
         return;
     }
 
-    public void updateTopic(){
+    public void updateTopic(String tn){
+        for(Component c : SubBox.getComponents()){
+            SubForm sf = (SubForm) c;
+            if(sf.TopicName.equals(tn)){
+                sf.setBackground(new java.awt.Color(241, 99, 98));
+                pack();
+                return;
+            }
+        }
+        SubBox.add(new SubForm(tn, false));
+
+        /*
         SubBox.removeAll();
         for(String top : myClient.getServerTopics().ListTopicName()){
             SubBox.add(new SubForm(top, isSubscribedto(top)));
         }
         ConvoBox.revalidate();
-        ConvoBox.repaint();
+        ConvoBox.repaint();*/
         pack();
         return;
     }
@@ -97,8 +107,7 @@ public class DashFrame extends javax.swing.JFrame {
     }
 
     private class SubForm extends javax.swing.JPanel {
-        private String TopicName;
-        private boolean Triggered;
+        protected String TopicName;
         private JToggleButton SubButton;
         private JButton CheckoutButton;
 
@@ -109,8 +118,7 @@ public class DashFrame extends javax.swing.JFrame {
             setMaximumSize(new java.awt.Dimension(getPreferredSize()));
             setMinimumSize(new java.awt.Dimension(getPreferredSize()));
             setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(35, 37, 43), 2));
-            if(tn.equals(LastUpdatedTopic))setBackground(new java.awt.Color(241, 99, 98));
-            else setBackground(new java.awt.Color(139, 137, 130));
+            setBackground(new java.awt.Color(241, 99, 98));
             SubButton = new JToggleButton();
             CheckoutButton = new JButton();
 
@@ -206,10 +214,9 @@ public class DashFrame extends javax.swing.JFrame {
         System.setErr(new PrintStream(System.err){
             public void println(String s){
                 if(s.contains("NM")|| s.contains("NT")){
-                    LastUpdatedTopic = s.substring(s.lastIndexOf(' ')+1);
-                    super.println("Last modified topic is: "+LastUpdatedTopic);
+                    super.println("Last modified topic is: "+s.substring(s.indexOf(' ')+1, s.lastIndexOf(' ')));
                     updateConvo();
-                    updateTopic();
+                    updateTopic(s.substring(s.indexOf(' ')+1, s.lastIndexOf(' ')));
                 }
                 super.println(s);
             }
@@ -227,7 +234,7 @@ public class DashFrame extends javax.swing.JFrame {
         ServerHost = sh;
         myClient = user;
         Caller = c;
-        updateTopic();
+        for(String top : myClient.getServerTopics().ListTopicName()) updateTopic(top);
         SendButton.setEnabled(false);
         // populate convoBox
     }
@@ -474,7 +481,7 @@ public class DashFrame extends javax.swing.JFrame {
             System.err.println("Couldn't add topic...");
         }
         TopicNameField.setText("");
-        updateTopic();
+        updateTopic(TopicName);
         pack();
     }
 
@@ -488,7 +495,7 @@ public class DashFrame extends javax.swing.JFrame {
             e.printStackTrace();
         }
         updateConvo();
-        updateTopic();
+        updateTopic(TopicConvoName.getText());
     }
 
     private void sendHover(java.awt.event.MouseEvent evt) {
