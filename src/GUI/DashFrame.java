@@ -9,11 +9,12 @@ import RMIForum.user.*;
 import RMIForum.RMICore.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -47,9 +48,14 @@ public class DashFrame extends javax.swing.JFrame {
         ConvoBox.removeAll();
         // add as many msgBox as the message in topic...
         if(!myClient.getServerTopics().contains(TopicConvoName.getText())) return;
-        for(String msg : myClient.getServerTopics().getTopicNamed(TopicConvoName.getText()).ListMessages()){
-            ConvoBox.add(new MsgBox(msg));
+        List msg = myClient.getServerTopics().getTopicNamed(TopicConvoName.getText()).ListMessages();
+        for (int i=0; i<msg.size()-1; i++){
+            ConvoBox.add(new MsgBox((String) msg.get(i)));
         }
+        MsgBox lastMsg = new MsgBox((String)msg.get(msg.size()-1));
+        lastMsg.setBackground(new java.awt.Color(83, 151, 202));
+        lastMsg.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(70,73,76), 2), javax.swing.BorderFactory.createLineBorder(new java.awt.Color(83, 151, 202), 5)));
+        ConvoBox.add(lastMsg);
         ConvoBox.revalidate();
         ConvoBox.repaint();
         pack();
@@ -60,7 +66,8 @@ public class DashFrame extends javax.swing.JFrame {
         for(Component c : SubBox.getComponents()){
             SubForm sf = (SubForm) c;
             if(sf.TopicName.equals(tn)){
-                sf.setBackground(new java.awt.Color(241, 99, 98));
+                if(tn.equals(TopicConvoName.getText())) updateConvo();
+                else sf.setBackground(new java.awt.Color(241, 99, 98));
                 pack();
                 return;
             }
@@ -103,6 +110,22 @@ public class DashFrame extends javax.swing.JFrame {
             setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(70,73,76), 2), javax.swing.BorderFactory.createLineBorder(new java.awt.Color(103, 106, 108), 5)));
             setText(Message);
             setMaximumSize(new Dimension(getPreferredSize()));
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    super.mouseEntered(e);
+                    setBackground(new java.awt.Color(83, 151, 202));
+                    setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(70,73,76), 2), javax.swing.BorderFactory.createLineBorder(new java.awt.Color(83, 151, 202), 5)));
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    super.mouseExited(e);
+                    setBackground(new java.awt.Color(103, 106, 108));
+                    setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(70,73,76), 2), javax.swing.BorderFactory.createLineBorder(new java.awt.Color(103, 106, 108), 5)));
+                }
+            });
         }
     }
 
@@ -119,6 +142,18 @@ public class DashFrame extends javax.swing.JFrame {
             setMinimumSize(new java.awt.Dimension(getPreferredSize()));
             setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(35, 37, 43), 2));
             setBackground(new java.awt.Color(241, 99, 98));
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    super.mouseEntered(e);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setBackground(new java.awt.Color(103, 106, 108));
+                    super.mouseExited(e);
+                }
+            });
             SubButton = new JToggleButton();
             CheckoutButton = new JButton();
 
