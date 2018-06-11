@@ -208,14 +208,15 @@ public class DashFrame extends javax.swing.JFrame {
                 super.println(s);
             }
         });
-
+/*
         System.setOut(new PrintStream(System.out){
             public void println(String s){
                 if(s.contains("topic : ")){
-                    System.out.println(s.);
+                    System.out.println(s);
                 }
             }
         });
+  */
         initComponents();
         ServerHost = sh;
         myClient = user;
@@ -466,6 +467,7 @@ public class DashFrame extends javax.swing.JFrame {
         } catch (RemoteException e) {
             System.err.println("Couldn't add topic...");
         }
+        TopicNameField.setText("");
         updateTopic();
         pack();
     }
