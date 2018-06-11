@@ -57,12 +57,20 @@ public class DashFrame extends javax.swing.JFrame {
     public void updateTopic(){
         SubBox.removeAll();
         for(String top : myClient.getServerTopics().ListTopicName()){
-            SubBox.add(new SubForm(top, myClient.getServerTopics().getTopicNamed(top).hasUser(myClient.GetUsername())));
+            SubBox.add(new SubForm(top, isSubscribedto(top)));
         }
         ConvoBox.revalidate();
         ConvoBox.repaint();
         pack();
         return;
+    }
+
+    private boolean isSubscribedto(String top){
+        return myClient.getServerTopics().getTopicNamed(top).hasUser(myClient.GetUsername());
+    }
+
+    private boolean isOwner(String top){
+        return myClient.getServerTopics().getTopicNamed(top).getOwner().equals(myClient.GetUsername());
     }
     /**************************************************************************/
 
@@ -98,6 +106,7 @@ public class DashFrame extends javax.swing.JFrame {
             setMaximumSize(new java.awt.Dimension(getPreferredSize()));
             setMinimumSize(new java.awt.Dimension(getPreferredSize()));
             setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(35, 37, 43), 2));
+            setBackground(new java.awt.Color(241, 99, 98));
             SubButton = new JToggleButton();
             CheckoutButton = new JButton();
 
@@ -158,7 +167,7 @@ public class DashFrame extends javax.swing.JFrame {
 
         private void SubButtonActionPerformed(java.awt.event.ActionEvent evt) {
             // TODO add your handling code here:
-            if (!Triggered) {
+            if (SubButton.isSelected()) {
                 // call from server class
                 try {
                     myClient.SubscribeRequest(TopicName, "subscribe");
@@ -174,14 +183,13 @@ public class DashFrame extends javax.swing.JFrame {
                 }
                 SubButton.setText("Subscribe");
             }
-            Triggered = !Triggered;
         }
 
         private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {
             // TODO add your handling code here:
             // flush convoBox
             TopicConvoName.setText(TopicName);
-            SendButton.setEnabled(Triggered);
+            SendButton.setEnabled(SubButton.isEnabled());
             setBackground(new java.awt.Color(139, 137, 130));
             updateConvo();
         }
@@ -198,6 +206,14 @@ public class DashFrame extends javax.swing.JFrame {
                     updateTopic();
                 }
                 super.println(s);
+            }
+        });
+
+        System.setOut(new PrintStream(System.out){
+            public void println(String s){
+                if(s.contains("topic : ")){
+                    System.out.println(s.);
+                }
             }
         });
         initComponents();
@@ -459,7 +475,7 @@ public class DashFrame extends javax.swing.JFrame {
         String message = MessageField.getText();
         if(message.isEmpty()) return;
         try {
-            myClient.PublishRequest(new MessageClass(myClient.GetUsername(), message), TopicConvoName.getText());
+            System.err.println(myClient.PublishRequest(new MessageClass(myClient.GetUsername(), message), TopicConvoName.getText())?"message sent" : "error in sending message");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
